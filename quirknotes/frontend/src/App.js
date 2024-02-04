@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     const getNotes = async () => {
       try {
-        await fetch("http://localhost:4000/getAllNotes")
+        await fetch(`http://localhost:4000/getAllNotes`)
         .then(async (response) => {
           if (!response.ok) {
             console.log("Served failed:", response.status)
@@ -38,13 +38,41 @@ function App() {
     getNotes()
   }, [])
 
-  const deleteNote = (entry) => {
-    // Code for DELETE here
-  }
+  const deleteNote = async (entry) => {
+    try{
+      await fetch(`http://localhost:4000/deleteNote/${entry._id}`, { 
+        method: "DELETE" 
+      })
+      .then(async (response) => {
+        if(!response.ok) {
+          console.log("Request to delete failed: ", response.status);
+        }
+        else {
+          deleteNoteState(entry);
+        }
+      });
+    } catch (error) {
+      console.log("Fetch failed for note: ", error);
+      alert("Failed to delete note");
+    }
+  };
 
-  const deleteAllNotes = () => {
-    // Code for DELETE all notes here
-  }
+  const deleteAllNotes = async () => {
+    try{
+      await fetch(`http://localhost:4000/deleteAllNotes`, {
+        method: "DELETE" })
+        .then(async (response) => {
+          if(!response.ok) {
+            console.log("Server failed to delete all notes: ", response.status);
+          }
+          else {
+              deleteAllNotesState()
+          }
+        });
+    } catch (error) {
+
+    }
+  };
 
   
   // -- Dialog functions --
@@ -72,16 +100,20 @@ function App() {
     setNotes((prevNotes) => [...prevNotes, {_id, title, content}])
   }
 
-  const deleteNoteState = () => {
-    // Code for modifying state after DELETE here
+  const deleteNoteState = (entry) => {
+    setNotes((prevNotes) => [...prevNotes].filter(currNote => currNote._id !== entry._id))
   }
 
   const deleteAllNotesState = () => {
-    // Code for modifying state after DELETE all here
+    setNotes([])
   }
 
   const patchNoteState = (_id, title, content) => {
-    // Code for modifying state after PATCH here
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note._id === _id ? { _id, title, content } : note
+      )
+    );
   }
 
   return (
@@ -130,7 +162,7 @@ function App() {
           initialNote={dialogNote}
           closeDialog={closeDialog}
           postNote={postNoteState}
-          // patchNote={patchNoteState}
+          patchNote={patchNoteState}
           />
 
       </header>
