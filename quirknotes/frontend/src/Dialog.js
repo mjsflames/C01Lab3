@@ -55,6 +55,11 @@ function Dialog({open, initialNote, closeDialog, postNote: postNoteState, patchN
     }
     
     const patchNote = async () => {
+        if (!note || !note.title || !note.content) {
+            return 
+        }
+        setStatus("Loading...")
+        
         try{
             await fetch(`http://localhost:4000/patchNote/${note._id}`, {
                 method: "PATCH",
@@ -70,12 +75,10 @@ function Dialog({open, initialNote, closeDialog, postNote: postNoteState, patchN
                     console.log("Server failed: ", response.status) 
                 }
                 else{ 
-                    await response.json().then(() => {
                     patchNoteState(note._id, note.title, note.content)
-                    close();
-                    })
+                    close()
                 }
-            });
+            })
         } catch (error) {
             setStatus("Error trying to patch note")
             console.log("Fetch function failed: ", error)
