@@ -46,6 +46,7 @@ function App() {
       .then(async (response) => {
         if(!response.ok) {
           console.log("Request to delete failed: ", response.status);
+          alert("Deletion failed");
         }
         else {
           deleteNoteState(entry);
@@ -54,7 +55,7 @@ function App() {
     } catch (error) {
       console.log("Fetch failed for note: ", error);
       alert("Failed to delete note");
-    }
+    } 
   };
 
   const deleteAllNotes = async () => {
@@ -64,13 +65,15 @@ function App() {
         .then(async (response) => {
           if(!response.ok) {
             console.log("Server failed to delete all notes: ", response.status);
+            alert("Deletion failed");
           }
           else {
               deleteAllNotesState()
           }
         });
     } catch (error) {
-
+      console.log("Fetch function failed: ", error);
+      alert("Failed to delete all notes");
     }
   };
 
